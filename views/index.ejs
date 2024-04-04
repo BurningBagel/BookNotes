@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Notes</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+
+<h1>Book Notes</h1>
+
+<h2>This is a website for registering the notes I've taken to keep track of characters and events in books I'm reading.</h2>
+
+
+<% for( let index = 0; index < books.length; index++ ) { %>
+    <div>
+        <figure>
+            <a href=<%= books[i].amazonURL %>>
+                <img src=<%= books[i].coverURL %> alt="Book cover" loading="lazy">
+            </a>
+        </figure>
+        <h2>
+            <a href=<%= books[i].amazonURL %>><%= books[i].bookTitle %></a>
+        </h2>
+        <p><%= books[i].bookNotes %></p>
+    </div>
+<% } %>
+    
+</body>
+</html>
