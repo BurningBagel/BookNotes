@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 
+const MODE = process.argv[-1];
 
 
 /**
@@ -22,24 +23,23 @@ import pg from "pg";
  */
 
 
-
 const app = express();
 const port = 3000;
 
-const db = new pg.Client({
-    user: 'postgres',
-    password: '12345',
-    database: "booknotes",
-    host: "localhost",
-    port: 5432,
-  });
-  db.connect();
+// const db = new pg.Client({
+//     user: 'postgres',
+//     password: '12345',
+//     database: "booknotes",
+//     host: "localhost",
+//     port: 5432,
+//   });
+//   db.connect();
 
 app.get("/", async (req,res) =>{
 
-    const books = await db.query("SELECT * FROM books;");
+    // const books = await db.query("SELECT * FROM books;");
 
-    res.render("index.ejs",{books:books.rows});
+    res.render("index.ejs");
 });
 
 app.use(bodyParser.urlencoded({extended:true}));

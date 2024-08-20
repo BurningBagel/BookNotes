@@ -1,58 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Notes</title>
-    <link rel="stylesheet" href="styles/style.css">
-</head>
+<%- include('partials/header.ejs') %>
+
 <body>
 
-<h1>Book Notes</h1>
+<div class="px-4 py-5 my-5 text-center">
+    <%- include('../public/img/Wheel-icon.svg') %>
+    <h1 class="display-5 fw-bold text-body-emphasis">Book Notes</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Because I can't be bothered to keep track of 20 different side characters that were introduced 4 books ago</p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <input class="form-control" type="text" name="searchTerm" id="searchTerm">
+        <select class="form-select" name="type" id="type">
+            <option select>Select the type of search</option>
+            <option value="entity">Character/Faction</option>
+            <option value="location">Location</option>
+            <option value="event">Event</option>
+        </select>
+        <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Search</button>
+      </div>
+    </div>
+  </div>
 
-<button class="showmore" onclick="">show more?</button>
-<h2 style="display: none;">This is a website for registering the notes I've taken to keep track of characters and events in books I'm reading.</h2>
 
-<!-- 
-    SHOW/MORE
-    its probably gonna look real shit but I wanna learn how to do this so letsago
-
-    show button outside main div. How to find it after? Parent of the parent?
-        This is the main problem. 
-
-    hide button inside div right before text. Click it to hide div
-
-
-
- -->
-<div>
+<!-- <div>
     <p>Notes:</p>
     <p onclick="showMore(this)">Show more</p>
     <p style="display: none;">
         TEST TEST TEST
     </p>
-</div>
+</div> -->
  
 
 
-<% for( let index = 0; index < books.length; index++ ) { %>
-    <div>
-        <figure>
-            <a href=<%= books[i].amazonURL %>>
-                <img src=<%= books[i].coverURL %> alt="Book cover" loading="lazy">
-            </a>
-        </figure>
-        <h2>
-            <a href=<%= books[i].amazonURL %>><%= books[i].bookTitle %></a>
-        </h2>
-        <p>Notes:</p>
-        <p onclick="showMore(this)">Show more</p>
-        <div style="display: none;">
-            <p><%= books[i].bookNotes %></p>
-        </div>
-            
-    </div>
-<% } %>
+
     
 </body>
 <script>
@@ -72,6 +51,6 @@ function showMore(item) {
     //     document.getElementById(divId).style.display = 'none';
     // }
 }
-
 </script>
-</html>
+
+<%- include('partials/footer.ejs') %>
