@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 
-const MODE = process.argv[-1];
+const TESTFLAG = process.argv[-1];
 
 
 /**
@@ -26,6 +26,9 @@ const MODE = process.argv[-1];
 const app = express();
 const port = 3000;
 
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.static('public'));
+
 // const db = new pg.Client({
 //     user: 'postgres',
 //     password: '12345',
@@ -38,12 +41,30 @@ const port = 3000;
 app.get("/", async (req,res) =>{
 
     // const books = await db.query("SELECT * FROM books;");
+    
 
     res.render("index.ejs");
 });
 
-app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static('public'));
+app.post("/search", async (req,res) =>{
+
+    var searchResults;
+    if(TESTFLAG){
+        searchResults = {
+            name:"Rand Al'Thor",
+            description:"Tall, red-hair, grey eyes",
+            occupation:"The Dragon Reborn",
+            characteristics:"Can channel saidin; Swordmaster",
+            species:"Human",
+            affiliation:"The Dragon Reborn",
+            location: null
+        }
+    }
+
+    res.render("searchEntity.ejs",{results:searchResults});
+
+
+});
 
 
 app.listen(port, () => {

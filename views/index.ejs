@@ -7,16 +7,18 @@
     <h1 class="display-5 fw-bold text-body-emphasis">Book Notes</h1>
     <div class="col-lg-6 mx-auto">
       <p class="lead mb-4">Because I can't be bothered to keep track of 20 different side characters that were introduced 4 books ago</p>
-      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <input class="form-control" type="text" name="searchTerm" id="searchTerm">
-        <select class="form-select" name="type" id="type">
-            <option select>Select the type of search</option>
-            <option value="entity">Character/Faction</option>
-            <option value="location">Location</option>
-            <option value="event">Event</option>
-        </select>
-        <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Search</button>
-      </div>
+      <form method="POST">
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <input class="form-control" type="text" name="searchTerm" id="searchTerm" >
+            <select class="form-select" name="type" id="type">
+                <option select>Select the type of search</option>
+                <option value="entity">Character/Faction</option>
+                <option value="location">Location</option>
+                <option value="event">Event</option>
+            </select>
+            <button type="button" class="btn btn-primary btn-lg px-4 gap-3" formaction="/search">Search</button>
+          </div>
+      </form>
     </div>
   </div>
 
