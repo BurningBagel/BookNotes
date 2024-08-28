@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
+import { searchType } from "./public/enums/searchType.enum";
 
 const TESTFLAG = process.argv[-1];
 
@@ -18,7 +19,7 @@ const TESTFLAG = process.argv[-1];
  * MAN THIS PLAN BALLOONED IN FRONT OF MY EYES
  * honestly this is shaping up to be quite something, but its gonna take a while to do. I'm gonna leave this as it is for now and finish it after the course.
  * 
- * 
+ * Main page -> Search Disambiguation(if needed) -> Details
  * 
  */
 
@@ -51,6 +52,19 @@ app.post("/search", async (req,res) =>{
     var searchResults;
     if(TESTFLAG){
         searchResults = {
+            name:"Rand Al'Thor"
+        }
+        searchType = searchType.ENTITY;
+    }
+
+    res.render("searchResults.ejs",{results:searchResult,type:req.body.type});
+
+
+});
+
+app.post("/inspect", async (req,res) =>{
+    if(TESTFLAG){
+        result={
             name:"Rand Al'Thor",
             description:"Tall, red-hair, grey eyes",
             occupation:"The Dragon Reborn",
@@ -59,11 +73,8 @@ app.post("/search", async (req,res) =>{
             affiliation:"The Dragon Reborn",
             location: null
         }
+        res.render("inspect.ejs",{entity:result})
     }
-
-    res.render("searchEntity.ejs",{results:searchResults});
-
-
 });
 
 

@@ -1,4 +1,5 @@
 <%- include('partials/header.ejs') %>
+<%- import { searchType } from "./public/enums/searchType.enum"; %>
 
 <body>
 
@@ -12,9 +13,9 @@
             <input class="form-control" type="text" name="searchTerm" id="searchTerm" >
             <select class="form-select" name="type" id="type">
                 <option select>Select the type of search</option>
-                <option value="entity">Character/Faction</option>
-                <option value="location">Location</option>
-                <option value="event">Event</option>
+                <option value=<%= searchType.ENTITY %>>Character/Faction</option>
+                <option value=<%= searchType.LOCATION %>>Location</option>
+                <option value=<%= searchType.EVENT %>>Event</option>
             </select>
             <button type="button" class="btn btn-primary btn-lg px-4 gap-3" formaction="/search">Search</button>
           </div>
