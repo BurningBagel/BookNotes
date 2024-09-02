@@ -1,3 +1,3 @@
 export const testMode = {
-    TEST: Symbol("test")
+    TEST: "test"
 }

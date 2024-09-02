@@ -52,7 +52,6 @@ app.get("/", async (req, res) => {
 app.post("/search", async (req, res) => {
   var searchResults;
   if (TESTFLAG == testMode.TEST) {
-    console.log("hey!")
     searchResults = [
       {
         name: "Rand Al'Thor",
@@ -69,7 +68,7 @@ app.post("/search", async (req, res) => {
 
 app.post("/inspect", async (req, res) => {
   if (TESTFLAG == testMode.TEST) {
-    result = {
+    let result = {
       name: "Rand Al'Thor",
       description: "Tall, red-hair, grey eyes",
       occupation: "The Dragon Reborn",

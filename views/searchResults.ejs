@@ -11,7 +11,8 @@
         </tr>
     </thead>
     <tbody>
-     <% for( let index = 0; index < results.length+1; index++ ) { %>
+    <% console.log(results) %>
+     <% for( let index = 0; index < results.length; index++ ) { %>
         <tr>
             <th scope="row"><%= index+1 %></th>
             <td><%= results[index].name %></td>
