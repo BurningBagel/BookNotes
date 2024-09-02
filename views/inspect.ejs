@@ -1,11 +1,15 @@
 <%- include('partials/header.ejs') %>
 
 <h1><%= entity.name %></h1>
-<h2><%= entity.description %></h2>
-<h2><%= entity.occupation %></h2>
-<h2><%= entity.characteristics %></h2>
-<h2><%= entity.species %></h2>
-<h2><%= entity.affiliation %></h2>
-<h2><%= entity.location %></h2>
+<ul>
+    <li>Description: <%= entity.description %></li>
+    <li>Occupation: <%= entity.occupation %></li>
+    <li>Characteristics: <%= entity.characteristics %></li>
+    <li>Species: <%= entity.species %></li>
+    <li>Affiliation: <%= entity.affiliation %></li>
+    <li>Location: <%= entity.location %></li>
+</ul>
 
+
+</body>
 <%- include('partials/footer.ejs') %>

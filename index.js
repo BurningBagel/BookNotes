@@ -75,7 +75,7 @@ app.post("/inspect", async (req, res) => {
       characteristics: "Can channel saidin; Swordmaster",
       species: "Human",
       affiliation: "The Dragon Reborn",
-      location: null,
+      location: "The Two Rivers",
     };
     res.render("inspect.ejs", { entity: result });
   }
