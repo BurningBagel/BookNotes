@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import { searchType } from "./public/enums/searchType.enum.js";
 import { testMode } from "./public/enums/testMode.enum.js";
+import nodeNotifier from "node-notifier";
 
 const TESTFLAG = process.argv[process.argv.length-1];
 
@@ -21,10 +22,13 @@ const TESTFLAG = process.argv[process.argv.length-1];
  *
  * Main page -> Search Disambiguation(if needed) -> Details -> Search again
  *
+ * still need to make inspect pages for different types of objects
  */
 
 const app = express();
 const port = 3000;
+
+var currentSearchResults = [];
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -57,18 +61,33 @@ app.post("/search", async (req, res) => {
         name: "Rand Al'Thor",
       },
     ];
+    currentSearchResults = searchResults.slice();
     // currentSearchType = searchType.ENTITY;
   }
 
-  res.render("searchResults.ejs", {
-    results: searchResults,
-    type: req.body.type,
-  });
+  if(searchResults.length == 0){
+    nodeNotifier.notify({
+      title:"Error",
+      message:"No matches found. Please try again."
+    })
+    res.render("index.ejs");
+  }
+  else if(searchResults.length == 1){
+    res.render("inspect.ejs",{entity:searchResults[0]})
+  }
+  else{
+    res.render("searchResults.ejs", {
+      results: searchResults,
+      type: req.body.type,
+    });
+  }
+
 });
 
 app.post("/inspect", async (req, res) => {
+  let result;
   if (TESTFLAG == testMode.TEST) {
-    let result = {
+    result = {
       name: "Rand Al'Thor",
       description: "Tall, red-hair, grey eyes",
       occupation: "The Dragon Reborn",
@@ -77,8 +96,14 @@ app.post("/inspect", async (req, res) => {
       affiliation: "The Dragon Reborn",
       location: "The Two Rivers",
     };
-    res.render("inspect.ejs", { entity: result });
+    
   }
+  else{
+    //result = db.query()
+    //wait, if I have all the results, I dont need to query again
+  }
+
+  res.render("inspect.ejs", { entity: result });
 });
 
 app.listen(port, () => {
