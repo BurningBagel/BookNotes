@@ -5,5 +5,5 @@ export class Entity{
     characteristics
     species
     affiliation
-    location
+    relatedLocation
 }

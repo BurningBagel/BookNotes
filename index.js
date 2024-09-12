@@ -55,6 +55,8 @@ app.get("/", async (req, res) => {
 
 app.post("/search", async (req, res) => {
   var searchResults;
+
+  //TEST MODE
   if (TESTFLAG == testMode.TEST) {
     searchResults = [
       {
@@ -62,9 +64,18 @@ app.post("/search", async (req, res) => {
       },
     ];
     currentSearchResults = searchResults.slice();
-    // currentSearchType = searchType.ENTITY;
+    currentSearchType = searchType.ENTITY;
   }
 
+  //MAIN MODE
+  else{
+    //searchResults = db.query()...TODO
+
+    currentSearchType = req.type;
+  }
+    //based on number of returned results, we either error back to main page, go straight to inspect, or show the disambiguation page
+
+    //no results
   if(searchResults.length == 0){
     nodeNotifier.notify({
       title:"Error",
@@ -72,13 +83,32 @@ app.post("/search", async (req, res) => {
     })
     res.render("index.ejs");
   }
+  //1 result
   else if(searchResults.length == 1){
-    res.render("inspect.ejs",{entity:searchResults[0]})
+    
+    switch (currentSearchType) {
+      case searchType.ENTITY:
+        res.render("inspectEntity.ejs",{entity:searchResults[0]})
+        break;
+      case searchType.EVENT:
+        res.render("inspectEvent.ejs",{event:searchResults[0]})
+        break;
+      case searchType.LOCATION:
+        res.render("inspectLocation.ejs",{location:searchResults[0]})
+        break;
+    
+      default:
+        console.log(`AN ERROR HAS OCCURRED! UNKNOWN SEARCH TYPE ${currentSearchType}`)
+        res.render("index.ejs")
+        return;
+    }
+    
   }
+
+  //multiple results
   else{
     res.render("searchResults.ejs", {
-      results: searchResults,
-      type: req.body.type,
+      results: searchResults
     });
   }
 
