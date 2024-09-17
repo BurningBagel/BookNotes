@@ -4,6 +4,7 @@ import pg from "pg";
 import { searchType } from "./public/enums/searchType.enum.js";
 import { testMode } from "./public/enums/testMode.enum.js";
 import nodeNotifier from "node-notifier";
+import { ENTITY_QUERY_SQL } from "./public/sql/entity_query.sql.js";
 
 const TESTFLAG = process.argv[process.argv.length-1];
 
@@ -33,16 +34,18 @@ var currentSearchResults = [];
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-// const db = new pg.Client({
-//     user: 'postgres',
-//     password: '12345',
-//     database: "booknotes",
-//     host: "localhost",
-//     port: 5432,
-//   });
-//   db.connect();
+const db = new pg.Client({
+    user: 'postgres',
+    password: '12345',
+    database: "bookNotes",
+    host: "localhost",
+    port: 5433,
+  });
+
+  
 
 app.get("/", async (req, res) => {
+  await db.connect();
   // const books = await db.query("SELECT * FROM books;");
     if(TESTFLAG == testMode.TEST){
         console.log("TEST MODE ENABLED")
@@ -63,16 +66,20 @@ app.post("/search", async (req, res) => {
         name: "Rand Al'Thor",
       },
     ];
-    currentSearchResults = searchResults.slice();
+    
     currentSearchType = searchType.ENTITY;
   }
 
   //MAIN MODE
   else{
-    //searchResults = db.query()...TODO
+    
 
     currentSearchType = req.type;
+
+    searchResults = db.query(prepareSQL(req.body,currentSearchType));
   }
+
+  currentSearchResults = searchResults.slice();
     //based on number of returned results, we either error back to main page, go straight to inspect, or show the disambiguation page
 
     //no results
@@ -135,6 +142,28 @@ app.post("/inspect", async (req, res) => {
 
   res.render("inspect.ejs", { entity: result });
 });
+
+function prepareSQL(requestBody,requestType){
+  var sqlToUse;
+  switch(requestType){
+    case searchType.ENTITY:
+      sqlToUse = ENTITY_QUERY_SQL;
+      break;
+    case searchType.EVENT:
+      //TODO
+      break;
+    case searchType.LOCATION:
+      //TODO
+      break;
+    default:
+      console.log(`ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${requestType}`);
+      return;
+  }
+
+  sqlToUse.replace("***",requestBody.searchTerm)
+  return sqlToUse;
+
+}
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
