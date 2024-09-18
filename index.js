@@ -30,6 +30,7 @@ const app = express();
 const port = 3000;
 
 var currentSearchResults = [];
+var currentSearchType;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -45,13 +46,14 @@ const db = new pg.Client({
   
 
 app.get("/", async (req, res) => {
-  await db.connect();
+  
   // const books = await db.query("SELECT * FROM books;");
     if(TESTFLAG == testMode.TEST){
         console.log("TEST MODE ENABLED")
     }
     else{
         console.log("TEST MODE NOT ENABLED")
+        await db.connect();
     }
   res.render("index.ejs");
 });

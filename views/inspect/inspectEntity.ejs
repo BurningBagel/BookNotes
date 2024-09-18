@@ -1,6 +1,6 @@
-<%- include('partials/header.ejs') %>
+<%- include('../partials/header.ejs') %>
 
-<h1><%= entity.name %></h1>
+<h1 class="container text-center"><%- include('../../public/img/ornament.svg') %><%= entity.name %><span style="transform: scale(-1,-1)"><%- include('../../public/img/ornament_flipped.svg') %></span></h1>
 <ul>
     <li>Description: <%= entity.description %></li>
     <li>Occupation: <%= entity.occupation %></li>
@@ -13,4 +13,4 @@
 
 
 </body>
-<%- include('partials/footer.ejs') %>
+<%- include('../partials/footer.ejs') %>
