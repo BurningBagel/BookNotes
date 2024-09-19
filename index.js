@@ -44,16 +44,19 @@ const db = new pg.Client({
   });
 
   
-
-app.get("/", async (req, res) => {
   
-  // const books = await db.query("SELECT * FROM books;");
+  
+  
+  app.get("/", async (req, res) => {
+    await db.connect();
+    
+    // const books = await db.query("SELECT * FROM books;");
     if(TESTFLAG == testMode.TEST){
         console.log("TEST MODE ENABLED")
     }
     else{
         console.log("TEST MODE NOT ENABLED")
-        await db.connect();
+        
     }
   res.render("index.ejs");
 });
@@ -76,9 +79,11 @@ app.post("/search", async (req, res) => {
   else{
     
 
-    currentSearchType = req.type;
 
-    searchResults = db.query(prepareSQL(req.body,currentSearchType));
+    // TODO TRATAR QUANDO SÓ VIER UM RESULTADO, PQ NÃO VEM UMA LISTA
+    searchResults = await db.query(prepareSQL(req.body));
+
+    console.log(searchResults)
   }
 
   currentSearchResults = searchResults.slice();
@@ -139,15 +144,16 @@ app.post("/inspect", async (req, res) => {
   }
   else{
     //result = db.query()
-    //wait, if I have all the results, I dont need to query again
+    //I need to query on every inspect due to the links mechanic
   }
 
   res.render("inspect.ejs", { entity: result });
 });
 
-function prepareSQL(requestBody,requestType){
+function prepareSQL(requestBody){
   var sqlToUse;
-  switch(requestType){
+  var cleanedUpTerm;
+  switch(requestBody.type){
     case searchType.ENTITY:
       sqlToUse = ENTITY_QUERY_SQL;
       break;
@@ -158,11 +164,17 @@ function prepareSQL(requestBody,requestType){
       //TODO
       break;
     default:
-      console.log(`ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${requestType}`);
+      console.log(`ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${requestBody.type}`);
       return;
   }
 
-  sqlToUse.replace("***",requestBody.searchTerm)
+  cleanedUpTerm = requestBody.searchTerm;
+  if(cleanedUpTerm.includes("'")){
+    cleanedUpTerm = cleanedUpTerm.replace("'","''")
+  }
+
+
+  sqlToUse = sqlToUse.replace("***",cleanedUpTerm)
   return sqlToUse;
 
 }
