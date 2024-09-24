@@ -62,7 +62,7 @@ const db = new pg.Client({
 });
 
 app.post("/search", async (req, res) => {
-  var searchResults;
+  var searchResults = [];
 
   //TEST MODE
   if (TESTFLAG == testMode.TEST) {
@@ -80,10 +80,16 @@ app.post("/search", async (req, res) => {
     
 
 
-    // TODO TRATAR QUANDO SÓ VIER UM RESULTADO, PQ NÃO VEM UMA LISTA
-    searchResults = await db.query(prepareSQL(req.body));
 
-    console.log(searchResults)
+    //SO, we need to receive the query results and put the objects into an array for later use. However, since we can 
+    //have only 1 result, which wont be put into an array automatically, we need to make something that can handle either case
+    //and still output an array. For this we use the flat() method on an empty array that just pushed the results of the query
+    var scratch = await db.query(prepareSQL(req.body));
+    searchResults.push(scratch.rows);
+    searchResults = searchResults.flat();
+
+  
+
   }
 
   currentSearchResults = searchResults.slice();
