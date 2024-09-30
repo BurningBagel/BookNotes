@@ -1,14 +1,14 @@
 <%- include('../partials/header.ejs') %>
 
-<h1 class="container text-center"><%- include('../../public/img/ornament.svg') %><%= entity.name %><span style="transform: scale(-1,-1)"><%- include('../../public/img/ornament_flipped.svg') %></span></h1>
+<h1 class="container text-center"><%- include('../../public/img/ornament.svg') %><%= Entity.name %><span style="transform: scale(-1,-1)"><%- include('../../public/img/ornament_flipped.svg') %></span></h1>
 <ul>
-    <li>Description: <%= entity.description %></li>
-    <li>Occupation: <%= entity.occupation %></li>
-    <li>Characteristics: <%= entity.characteristics %></li>
-    <li>Species: <%= entity.species %></li>
-    <li>Affiliation: <%= entity.affiliation %></li>
-    <li>Location: <%= entity.location %></li>
-    <li>Related Location(s): <a href="\inspect\"+<%= entity.relatedLocation %>><%= entity.relatedLocation %></a></li>
+    <li>Description: <%= Entity.description %></li>
+    <li>Occupation: <%= Entity.occupation %></li>
+    <li>Characteristics: <%= Entity.characteristics %></li>
+    <li>Species: <%= Entity.species %></li>
+    <li>Affiliation: <%= Entity.affiliation %></li>
+    <li>Location: <%= Entity.location %></li>
+    <li>Related Location(s): <a href="\inspect\"+<%= Entity.relatedLocation %>><%= Entity.relatedLocation %></a></li>
 </ul>
 
 

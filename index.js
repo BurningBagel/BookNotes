@@ -108,13 +108,13 @@ app.post("/search", async (req, res) => {
     
     switch (currentSearchType) {
       case searchType.ENTITY:
-        res.render("inspect/inspectEntity.ejs",{entity:searchResults[0]})
+        res.render("inspect/inspectEntity.ejs",{Entity:searchResults[0]})
         break;
       case searchType.EVENT:
-        res.render("inspect/inspectEvent.ejs",{event:searchResults[0]})
+        res.render("inspect/inspectEvent.ejs",{Event:searchResults[0]})
         break;
       case searchType.LOCATION:
-        res.render("inspect/inspectLocation.ejs",{location:searchResults[0]})
+        res.render("inspect/inspectLocation.ejs",{Location:searchResults[0]})
         break;
     
       default:
