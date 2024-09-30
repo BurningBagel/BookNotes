@@ -50,7 +50,6 @@ const db = new pg.Client({
   app.get("/", async (req, res) => {
     await db.connect();
     
-    // const books = await db.query("SELECT * FROM books;");
     if(TESTFLAG == testMode.TEST){
         console.log("TEST MODE ENABLED")
     }
