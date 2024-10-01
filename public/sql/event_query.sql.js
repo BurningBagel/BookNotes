@@ -1,0 +1,1 @@
+export const EVENT_QUERY_SQL = "SELECT * FROM EVENTS WHERE NAME LIKE UPPER('%***%')";

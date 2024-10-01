@@ -5,6 +5,8 @@ import { searchType } from "./public/enums/searchType.enum.js";
 import { testMode } from "./public/enums/testMode.enum.js";
 import nodeNotifier from "node-notifier";
 import { ENTITY_QUERY_SQL } from "./public/sql/entity_query.sql.js";
+import { EVENT_QUERY_SQL } from "./public/sql/event_query.sql.js";
+import { LOCATION_QUERY_SQL } from "./public/sql/location_query.sql.js";
 
 const TESTFLAG = process.argv[process.argv.length-1];
 
@@ -163,10 +165,10 @@ function prepareSQL(requestBody){
       sqlToUse = ENTITY_QUERY_SQL;
       break;
     case searchType.EVENT:
-      //TODO
+      sqlToUse = EVENT_QUERY_SQL;
       break;
     case searchType.LOCATION:
-      //TODO
+      sqlToUse = LOCATION_QUERY_SQL;
       break;
     default:
       console.log(`ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${requestBody.type}`);
