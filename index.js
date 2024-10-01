@@ -33,6 +33,7 @@ const port = 3000;
 
 var currentSearchResults = [];
 var currentSearchType;
+var dbConnected = false;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -50,8 +51,10 @@ const db = new pg.Client({
   
   
   app.get("/", async (req, res) => {
-    await db.connect();
-    
+    if(!dbConnected){
+      await db.connect();
+      dbConnected = true;
+    }
     if(TESTFLAG == testMode.TEST){
         console.log("TEST MODE ENABLED")
     }
@@ -85,7 +88,8 @@ app.post("/search", async (req, res) => {
     //SO, we need to receive the query results and put the objects into an array for later use. However, since we can 
     //have only 1 result, which wont be put into an array automatically, we need to make something that can handle either case
     //and still output an array. For this we use the flat() method on an empty array that just pushed the results of the query
-    var scratch = await db.query(prepareSQL(req.body));
+    currentSearchType = req.body.type;
+    var scratch = await db.query(prepareSQL(req.body.searchTerm));
     searchResults.push(scratch.rows);
     searchResults = searchResults.flat();
 
@@ -128,6 +132,7 @@ app.post("/search", async (req, res) => {
 
   //multiple results
   else{
+    console.log(searchResults);
     res.render("searchResults.ejs", {
       results: searchResults
     });
@@ -150,17 +155,18 @@ app.post("/inspect", async (req, res) => {
     
   }
   else{
-    //result = db.query()
+    result = db.query(prepareSQL(req.body.search))
     //I need to query on every inspect due to the links mechanic
   }
 
-  res.render("inspect.ejs", { entity: result });
+  res.render(`inspect${currentSearchType}.ejs`, { entity: result.rows[0] });
 });
 
-function prepareSQL(requestBody){
+function prepareSQL(searchTerm){
   var sqlToUse;
   var cleanedUpTerm;
-  switch(requestBody.type){
+
+  switch(currentSearchType){
     case searchType.ENTITY:
       sqlToUse = ENTITY_QUERY_SQL;
       break;
@@ -171,17 +177,24 @@ function prepareSQL(requestBody){
       sqlToUse = LOCATION_QUERY_SQL;
       break;
     default:
-      console.log(`ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${requestBody.type}`);
+      console.log(`ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${currentSearchType}`);
       return;
   }
 
-  cleanedUpTerm = requestBody.searchTerm;
-  if(cleanedUpTerm.includes("'")){
-    cleanedUpTerm = cleanedUpTerm.replace("'","''")
+  if(searchTerm.includes("'")){
+    cleanedUpTerm = searchTerm.replace("'","''");
+  }
+
+  //This function now handles search for both Name, which will be used in the main page search, and ID, which will be used later on with the disambiguation page, as well as links
+  if(isNaN(searchTerm)){
+    sqlToUse = sqlToUse.replace("%%%","Name");
+  }
+  else{
+    sqlToUse = sqlToUse.replace("%%%","ID");
   }
 
 
-  sqlToUse = sqlToUse.replace("***",cleanedUpTerm)
+  sqlToUse = sqlToUse.replace("***",cleanedUpTerm);
   return sqlToUse;
 
 }
