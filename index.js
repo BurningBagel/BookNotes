@@ -4,11 +4,8 @@ import pg from "pg";
 import { searchType } from "./public/enums/searchType.enum.js";
 import { testMode } from "./public/enums/testMode.enum.js";
 import nodeNotifier from "node-notifier";
-import { ENTITY_QUERY_SQL } from "./public/sql/entity_query.sql.js";
-import { EVENT_QUERY_SQL } from "./public/sql/event_query.sql.js";
-import { LOCATION_QUERY_SQL } from "./public/sql/location_query.sql.js";
 
-const TESTFLAG = process.argv[process.argv.length-1];
+const TESTFLAG = process.argv[process.argv.length - 1];
 
 /**
  * THE PLAN
@@ -39,29 +36,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 const db = new pg.Client({
-    user: 'postgres',
-    password: '12345',
-    database: "bookNotes",
-    host: "localhost",
-    port: 5433,
-  });
+  user: "postgres",
+  password: "12345",
+  database: "bookNotes",
+  host: "localhost",
+  port: 5433,
+});
 
-  
-  
-  
-  
-  app.get("/", async (req, res) => {
-    if(!dbConnected){
-      await db.connect();
-      dbConnected = true;
-    }
-    if(TESTFLAG == testMode.TEST){
-        console.log("TEST MODE ENABLED")
-    }
-    else{
-        console.log("TEST MODE NOT ENABLED")
-        
-    }
+app.get("/", async (req, res) => {
+  if (!dbConnected) {
+    await db.connect();
+    dbConnected = true;
+  }
+  if (TESTFLAG == testMode.TEST) {
+    console.log("TEST MODE ENABLED");
+  }
+
   res.render("index.ejs");
 });
 
@@ -75,69 +65,63 @@ app.post("/search", async (req, res) => {
         name: "Rand Al'Thor",
       },
     ];
-    
+
     currentSearchType = searchType.ENTITY;
   }
 
   //MAIN MODE
-  else{
-    
-
-
-
-    //SO, we need to receive the query results and put the objects into an array for later use. However, since we can 
+  else {
+    //SO, we need to receive the query results and put the objects into an array for later use. However, since we can
     //have only 1 result, which wont be put into an array automatically, we need to make something that can handle either case
     //and still output an array. For this we use the flat() method on an empty array that just pushed the results of the query
     currentSearchType = req.body.type;
     var scratch = await db.query(prepareSQL(req.body.searchTerm));
     searchResults.push(scratch.rows);
     searchResults = searchResults.flat();
-
-  
-
   }
 
   currentSearchResults = searchResults.slice();
-    //based on number of returned results, we either error back to main page, go straight to inspect, or show the disambiguation page
+  //based on number of returned results, we either error back to main page, go straight to inspect, or show the disambiguation page
 
-    //no results
-  if(searchResults.length == 0){
+  //no results
+  if (searchResults.length == 0) {
     nodeNotifier.notify({
-      title:"Error",
-      message:"No matches found. Please try again."
-    })
+      title: "Error",
+      message: "No matches found. Please try again.",
+    });
     res.render("index.ejs");
   }
   //1 result
-  else if(searchResults.length == 1){
-    
+  else if (searchResults.length == 1) {
     switch (currentSearchType) {
       case searchType.ENTITY:
-        res.render("inspect/inspectEntity.ejs",{Entity:searchResults[0]})
+        res.render("inspect/inspectEntity.ejs", { Entity: searchResults[0] });
         break;
       case searchType.EVENT:
-        res.render("inspect/inspectEvent.ejs",{Event:searchResults[0]})
+        res.render("inspect/inspectEvent.ejs", { Event: searchResults[0] });
         break;
       case searchType.LOCATION:
-        res.render("inspect/inspectLocation.ejs",{Location:searchResults[0]})
+        res.render("inspect/inspectLocation.ejs", {
+          Location: searchResults[0],
+        });
         break;
-    
+
       default:
-        console.log(`AN ERROR HAS OCCURRED! UNKNOWN SEARCH TYPE ${currentSearchType}`)
-        res.render("index.ejs")
+        console.log(
+          `AN ERROR HAS OCCURRED! UNKNOWN SEARCH TYPE ${currentSearchType}`
+        );
+        res.render("index.ejs");
         return;
     }
-    
   }
 
   //multiple results
-  else{
+  else {
     console.log(searchResults);
     res.render("searchResults.ejs", {
-      results: searchResults
+      results: searchResults,
     });
   }
-
 });
 
 app.post("/inspect", async (req, res) => {
@@ -152,51 +136,56 @@ app.post("/inspect", async (req, res) => {
       affiliation: "The Dragon Reborn",
       location: "The Two Rivers",
     };
-    
-  }
-  else{
-    result = db.query(prepareSQL(req.body.search))
+  } else {
+    result = await db.query(prepareSQL(req.body.search));
     //I need to query on every inspect due to the links mechanic
   }
 
-  res.render(`inspect${currentSearchType}.ejs`, { entity: result.rows[0] });
+  res.render(`inspect/inspect${currentSearchType}.ejs`, { Entry: result.rows[0] });
 });
 
-function prepareSQL(searchTerm){
-  var sqlToUse;
+function prepareSQL(searchTerm) {
+  var sqlToUse = "SELECT * FROM ";
   var cleanedUpTerm;
 
-  switch(currentSearchType){
+  switch (currentSearchType) {
     case searchType.ENTITY:
-      sqlToUse = ENTITY_QUERY_SQL;
+      // sqlToUse = ENTITY_QUERY_SQL;
+      sqlToUse += "ENTITIES WHERE ";
       break;
     case searchType.EVENT:
-      sqlToUse = EVENT_QUERY_SQL;
+      // sqlToUse = EVENT_QUERY_SQL;
+      sqlToUse += "EVENTS WHERE ";
       break;
     case searchType.LOCATION:
-      sqlToUse = LOCATION_QUERY_SQL;
+      // sqlToUse = LOCATION_QUERY_SQL;
+      sqlToUse += "LOCATIONS WHERE ";
       break;
     default:
-      console.log(`ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${currentSearchType}`);
+      console.log(
+        `ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${currentSearchType}`
+      );
       return;
   }
 
-  if(searchTerm.includes("'")){
-    cleanedUpTerm = searchTerm.replace("'","''");
-  }
+  //check nan, and append SQL accordingly
+
+  //Replace apostrophes with SQL compatible double apostrophe
+  cleanedUpTerm = searchTerm.replace("'", "''");
 
   //This function now handles search for both Name, which will be used in the main page search, and ID, which will be used later on with the disambiguation page, as well as links
-  if(isNaN(searchTerm)){
-    sqlToUse = sqlToUse.replace("%%%","Name");
-  }
-  else{
-    sqlToUse = sqlToUse.replace("%%%","ID");
+  if (isNaN(searchTerm)) {
+    sqlToUse += "UPPER(\"Name\") LIKE UPPER('%***%');";
+    // sqlToUse = sqlToUse.replace("***","LIKE UPPER('%***%')");
+    // sqlToUse = sqlToUse.replace("%%%","Name");
+  } else {
+    sqlToUse += "\"ID\" = ***;";
+    // sqlToUse = sqlToUse.replace("***","= ***");
+    // sqlToUse = sqlToUse.replace("%%%","ID");
   }
 
-
-  sqlToUse = sqlToUse.replace("***",cleanedUpTerm);
+  sqlToUse = sqlToUse.replace("***", cleanedUpTerm);
   return sqlToUse;
-
 }
 
 app.listen(port, () => {

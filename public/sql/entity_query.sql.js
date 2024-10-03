@@ -1,1 +1,0 @@
-export const ENTITY_QUERY_SQL = "SELECT * FROM ENTITIES WHERE UPPER(\"%%%\") LIKE UPPER('%***%')";

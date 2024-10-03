@@ -1,1 +1,0 @@
-export const LOCATION_QUERY_SQL = "SELECT * FROM LOCATIONS WHERE UPPER(\"Name\") LIKE UPPER('%***%')";

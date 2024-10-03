@@ -1,9 +1,9 @@
 <%- include('../partials/header.ejs') %>
-<h1 class="container text-center"><%- include('../../public/img/ornament.svg') %><%= Location.name %><span style="transform: scale(-1,-1)"><%- include('../../public/img/ornament_flipped.svg') %></span></h1>
+<h1 class="container text-center"><%- include('../../public/img/ornament.svg') %><%= Entry.name %><span style="transform: scale(-1,-1)"><%- include('../../public/img/ornament_flipped.svg') %></span></h1>
 
-<h2><%= Location.description %></h2>
+<h2><%= Entry.description %></h2>
 
-<h2><%= Location.region %></h2>
+<h2><%= Entry.region %></h2>
 
-<h2><%= Location.ruler %></h2>
+<h2><%= Entry.ruler %></h2>
 <%- include('../partials/footer.ejs') %>
