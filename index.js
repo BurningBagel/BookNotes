@@ -138,10 +138,11 @@ app.post("/inspect", async (req, res) => {
     };
   } else {
     result = await db.query(prepareSQL(req.body.search));
+    result = result.rows[0];
     //I need to query on every inspect due to the links mechanic
   }
 
-  res.render(`inspect/inspect${currentSearchType}.ejs`, { Entry: result.rows[0] });
+  res.render(`inspect/inspect${currentSearchType}.ejs`, { Entry: result});
 });
 
 function prepareSQL(searchTerm) {

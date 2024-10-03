@@ -1,14 +1,14 @@
 <%- include('../partials/header.ejs') %>
 
-<h1 class="container text-center"><%- include('../../public/img/ornament.svg') %><%= Entry.name %><span style="transform: scale(-1,-1)"><%- include('../../public/img/ornament_flipped.svg') %></span></h1>
+<h1 class="container text-center"><%- include('../../public/img/ornament.svg') %><%= Entry.Name %><span style="transform: scale(-1,-1)"><%- include('../../public/img/ornament_flipped.svg') %></span></h1>
 <ul>
-    <li>Description: <%= Entry.description %></li>
-    <li>Occupation: <%= Entry.occupation %></li>
-    <li>Characteristics: <%= Entry.characteristics %></li>
-    <li>Species: <%= Entry.species %></li>
-    <li>Affiliation: <%= Entry.affiliation %></li>
-    <li>Location: <%= Entry.location %></li>
-    <li>Related Location(s): <a href="\inspect\"+<%= Entry.relatedLocation %>><%= Entry.relatedLocation %></a></li>
+    <li>Description: <%= Entry.Description %></li>
+    <li>Occupation: <%= Entry.Occupation %></li>
+    <li>Characteristics: <%= Entry.Characteristics %></li>
+    <li>Species: <%= Entry.Species %></li>
+    <li>Affiliation: <%= Entry.Affiliation %></li>
+    <li>Location: <%= Entry.Location %></li>
+    
 </ul>
 
 
