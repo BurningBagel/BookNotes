@@ -1,11 +1,16 @@
 import express from "express";
 import bodyParser from "body-parser";
-import pg from "pg";
+
 import { searchType } from "./public/enums/searchType.enum.js";
 import { testMode } from "./public/enums/testMode.enum.js";
 import nodeNotifier from "node-notifier";
+import { selectSQL } from "./persistence/db_communication.js";
+
 
 const TESTFLAG = process.argv[process.argv.length - 1];
+
+// CURRENT TODO = search Results needs to pass on the type of search 
+
 
 /**
  * THE PLAN
@@ -30,24 +35,14 @@ const port = 3000;
 
 var currentSearchResults = [];
 var currentSearchType;
-var dbConnected = false;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-const db = new pg.Client({
-  user: "postgres",
-  password: "12345",
-  database: "bookNotes",
-  host: "localhost",
-  port: 5433,
-});
+
 
 app.get("/", async (req, res) => {
-  if (!dbConnected) {
-    await db.connect();
-    dbConnected = true;
-  }
+  
   if (TESTFLAG == testMode.TEST) {
     console.log("TEST MODE ENABLED");
   }
@@ -75,9 +70,8 @@ app.post("/search", async (req, res) => {
     //have only 1 result, which wont be put into an array automatically, we need to make something that can handle either case
     //and still output an array. For this we use the flat() method on an empty array that just pushed the results of the query
     currentSearchType = req.body.type;
-    var scratch = await db.query(prepareSQL(req.body.searchTerm));
-    searchResults.push(scratch.rows);
-    searchResults = searchResults.flat();
+    searchResults = await selectSQL(req.body.searchTerm,currentSearchType);
+    
   }
 
   currentSearchResults = searchResults.slice();
@@ -89,6 +83,7 @@ app.post("/search", async (req, res) => {
       title: "Error",
       message: "No matches found. Please try again.",
     });
+    console.log("No matches found!")
     res.render("index.ejs");
   }
   //1 result
@@ -119,7 +114,7 @@ app.post("/search", async (req, res) => {
   else {
     console.log(searchResults);
     res.render("searchResults.ejs", {
-      results: searchResults,
+      results: searchResults, type: currentSearchType
     });
   }
 });
@@ -137,7 +132,7 @@ app.post("/inspect", async (req, res) => {
       location: "The Two Rivers",
     };
   } else {
-    result = await db.query(prepareSQL(req.body.search));
+    result = await selectSQL(req.body.search,req.body.type);
     result = result.rows[0];
     //I need to query on every inspect due to the links mechanic
   }
@@ -145,49 +140,7 @@ app.post("/inspect", async (req, res) => {
   res.render(`inspect/inspect${currentSearchType}.ejs`, { Entry: result});
 });
 
-function prepareSQL(searchTerm) {
-  var sqlToUse = "SELECT * FROM ";
-  var cleanedUpTerm;
 
-  switch (currentSearchType) {
-    case searchType.ENTITY:
-      // sqlToUse = ENTITY_QUERY_SQL;
-      sqlToUse += "ENTITIES WHERE ";
-      break;
-    case searchType.EVENT:
-      // sqlToUse = EVENT_QUERY_SQL;
-      sqlToUse += "EVENTS WHERE ";
-      break;
-    case searchType.LOCATION:
-      // sqlToUse = LOCATION_QUERY_SQL;
-      sqlToUse += "LOCATIONS WHERE ";
-      break;
-    default:
-      console.log(
-        `ERROR: UNKNOWN REQUEST TYPE IN PREPARESQL: ${currentSearchType}`
-      );
-      return;
-  }
-
-  //check nan, and append SQL accordingly
-
-  //Replace apostrophes with SQL compatible double apostrophe
-  cleanedUpTerm = searchTerm.replace("'", "''");
-
-  //This function now handles search for both Name, which will be used in the main page search, and ID, which will be used later on with the disambiguation page, as well as links
-  if (isNaN(searchTerm)) {
-    sqlToUse += "UPPER(\"Name\") LIKE UPPER('%***%');";
-    // sqlToUse = sqlToUse.replace("***","LIKE UPPER('%***%')");
-    // sqlToUse = sqlToUse.replace("%%%","Name");
-  } else {
-    sqlToUse += "\"ID\" = ***;";
-    // sqlToUse = sqlToUse.replace("***","= ***");
-    // sqlToUse = sqlToUse.replace("%%%","ID");
-  }
-
-  sqlToUse = sqlToUse.replace("***", cleanedUpTerm);
-  return sqlToUse;
-}
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

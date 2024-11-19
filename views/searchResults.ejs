@@ -18,6 +18,7 @@
             
             <td>
                 <form action="/inspect" method="post">
+                    <textarea style="display: none;" name="type" value="<%= type %>"><%= type %></textarea>
                     <button class="btn btn-primary" name="search" value="<%= results[index].ID %>">Search</button>
                 </form>
             </td>
