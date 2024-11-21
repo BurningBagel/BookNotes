@@ -9,7 +9,6 @@ import { selectSQL } from "./persistence/db_communication.js";
 
 const TESTFLAG = process.argv[process.argv.length - 1];
 
-// CURRENT TODO = search Results needs to pass on the type of search 
 
 
 /**
@@ -112,7 +111,7 @@ app.post("/search", async (req, res) => {
 
   //multiple results
   else {
-    console.log(searchResults);
+    // console.log(searchResults);
     res.render("searchResults.ejs", {
       results: searchResults, type: currentSearchType
     });
@@ -133,11 +132,11 @@ app.post("/inspect", async (req, res) => {
     };
   } else {
     result = await selectSQL(req.body.search,req.body.type);
-    result = result.rows[0];
+    // result = result.rows[0];
     //I need to query on every inspect due to the links mechanic
   }
 
-  res.render(`inspect/inspect${currentSearchType}.ejs`, { Entry: result});
+  res.render(`inspect/inspect${currentSearchType}.ejs`, { Entry: result[0]});
 });
 
 
